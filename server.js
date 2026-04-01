@@ -19,13 +19,13 @@ const MIME = {
 };
 
 function fredProxy(reqUrl, res) {
-  // reqUrl like: /api/fred/series/observations?series_id=GDPC1&...
+  // reqUrl like: /api/fred?endpoint=series/observations&series_id=GDPC1&...
   const parsed = url.parse(reqUrl, true);
-  const fredPath = parsed.pathname.replace('/api/fred', '/fred');
-  const qs = new URLSearchParams(parsed.query);
+  const { endpoint = '', ...restQuery } = parsed.query;
+  const qs = new URLSearchParams(restQuery);
   qs.set('api_key', FRED_KEY);
   qs.set('file_type', 'json');
-  const fullPath = `${fredPath}?${qs.toString()}`;
+  const fullPath = `/fred/${endpoint}?${qs.toString()}`;
 
   const options = {
     hostname: FRED_HOST,
@@ -63,7 +63,7 @@ const server = http.createServer((req, res) => {
   }
 
   // FRED proxy
-  if (pathname.startsWith('/api/fred/')) {
+  if (pathname === '/api/fred') {
     fredProxy(req.url, res);
     return;
   }

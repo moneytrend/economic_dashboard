@@ -68,15 +68,15 @@ function isCacheStale(entry, seriesId) {
 
 // ---- FRED API ----
 async function fredFetch(endpoint, params = {}) {
-  // Build relative URL — the local proxy (server.js) injects the API key and forwards to FRED
-  const base = FRED_BASE.startsWith('http') ? FRED_BASE : window.location.origin + FRED_BASE;
-  const u = new URL(`${base}${endpoint}`);
-  // Only add api_key if NOT using the proxy (proxy adds it server-side)
-  if (FRED_BASE.startsWith('http')) u.searchParams.set('api_key', FRED_API_KEY);
-  u.searchParams.set('file_type', 'json');
+  // endpoint e.g. "/series/observations"  → strip leading slash → "series/observations"
+  const fredEndpoint = endpoint.replace(/^\//, '');
+
+  const u = new URL('/api/fred', window.location.origin);
+  u.searchParams.set('endpoint', fredEndpoint);
   Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
+
   const res = await fetch(u.toString());
-  if (!res.ok) throw new Error(`FRED API error ${res.status}: ${endpoint}`);
+  if (!res.ok) throw new Error(`FRED API error ${res.status}: ${fredEndpoint}`);
   return res.json();
 }
 

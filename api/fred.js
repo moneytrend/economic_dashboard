@@ -1,40 +1,32 @@
 // Vercel Serverless Function — FRED API Proxy
-// Handles: /api/fred/series/observations, /api/fred/releases/dates, etc.
+// Browser calls: /api/fred?endpoint=series/observations&series_id=GDPC1&...
 const https = require('https');
 
 const FRED_KEY = 'abf0f4764ba9e3e250d27364004f5d78';
 
 module.exports = function handler(req, res) {
-  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Build FRED endpoint path from catch-all segments
-  const segments = req.query.path;
-  const fredPath = Array.isArray(segments)
-    ? segments.join('/')
-    : (segments || '');
-
-  // Forward all query params except the internal 'path' key
-  const params = { ...req.query };
-  delete params.path;
+  // Extract the FRED endpoint path and forward remaining query params
+  const { endpoint = '', ...params } = req.query;
   params.api_key = FRED_KEY;
   params.file_type = 'json';
 
   const qs = new URLSearchParams(params).toString();
-  const fredUrl = `https://api.stlouisfed.org/fred/${fredPath}?${qs}`;
+  const fredUrl = `https://api.stlouisfed.org/fred/${endpoint}?${qs}`;
 
-  const options = {
+  console.log('Proxying to:', fredUrl.replace(FRED_KEY, '***'));
+
+  const proxyReq = https.get(fredUrl, {
     headers: {
       'User-Agent': 'Mozilla/5.0 (compatible; EconDashboard/1.0)',
       'Accept': 'application/json',
     },
-  };
-
-  const proxyReq = https.get(fredUrl, options, (proxyRes) => {
+  }, (proxyRes) => {
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=600');
+    res.setHeader('Cache-Control', 'public, s-maxage=3600');
     res.status(proxyRes.statusCode);
     proxyRes.pipe(res);
   });
