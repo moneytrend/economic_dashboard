@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🇺🇸 美國經濟戰情室</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-flag">🇺🇸</div>
+      <div class="loading-title">美國經濟戰情室</div>
+      <div class="loading-subtitle">U.S. ECONOMIC WAR ROOM</div>
+      <div class="loading-bar-wrap">
+        <div class="loading-bar">
+          <div class="loading-progress" id="loading-progress"></div>
+        </div>
+      </div>
+      <div class="loading-status" id="loading-status">初始化系統...</div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="brand-flag">🇺🇸</span>
+      <div class="brand-text-wrap">
+        <span class="brand-text">美國經濟<span class="brand-highlight">戰情室</span></span>
+        <span class="brand-sub">U.S. ECONOMIC WAR ROOM</span>
+      </div>
+    </div>
+
+    <div class="navbar-tabs" id="navbar-tabs">
+      <button class="nav-tab active" data-page="home" onclick="navigateTo('home')">
+        <i class="fas fa-tachometer-alt nav-icon"></i>
+        <span>首頁</span>
+      </button>
+      <button class="nav-tab" data-page="macro" onclick="navigateTo('macro')">
+        <i class="fas fa-globe-americas nav-icon"></i>
+        <span>總體經濟</span>
+      </button>
+      <button class="nav-tab" data-page="rates" onclick="navigateTo('rates')">
+        <i class="fas fa-percentage nav-icon"></i>
+        <span>利率</span>
+      </button>
+      <button class="nav-tab" data-page="inflation" onclick="navigateTo('inflation')">
+        <i class="fas fa-fire nav-icon"></i>
+        <span>通膨</span>
+      </button>
+      <button class="nav-tab" data-page="employment" onclick="navigateTo('employment')">
+        <i class="fas fa-briefcase nav-icon"></i>
+        <span>就業</span>
+      </button>
+      <button class="nav-tab" data-page="monetary" onclick="navigateTo('monetary')">
+        <i class="fas fa-dollar-sign nav-icon"></i>
+        <span>貨幣</span>
+      </button>
+      <button class="nav-tab" data-page="consumption" onclick="navigateTo('consumption')">
+        <i class="fas fa-shopping-cart nav-icon"></i>
+        <span>消費</span>
+      </button>
+      <button class="nav-tab" data-page="stress" onclick="navigateTo('stress')">
+        <i class="fas fa-heartbeat nav-icon"></i>
+        <span>壓力</span>
+      </button>
+    </div>
+
+    <div class="navbar-actions">
+      <div class="time-display">
+        <div class="time-label">最後更新</div>
+        <div class="time-value" id="last-update-time">--</div>
+      </div>
+      <button class="refresh-btn" id="refresh-btn" onclick="refreshPage()" title="清除快取並重新抓取數據">
+        <i class="fas fa-sync-alt" id="refresh-icon"></i>
+        <span>重新整理</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content" id="main-content">
+    <div class="page-loading" id="page-loading">
+      <div class="spinner"></div>
+      <div>載入數據中...</div>
+    </div>
+  </main>
+
+  <!-- Chart Modal -->
+  <div class="modal-overlay" id="chart-modal">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2 id="modal-title"></h2>
+          <div id="modal-subtitle" class="modal-subtitle"></div>
+        </div>
+        <div class="modal-controls-wrap">
+          <div class="modal-timeframes">
+            <button class="timeframe-btn" data-tf="1Y" onclick="changeModalTimeframe('1Y', this)">1年</button>
+            <button class="timeframe-btn" data-tf="3Y" onclick="changeModalTimeframe('3Y', this)">3年</button>
+            <button class="timeframe-btn active" data-tf="5Y" onclick="changeModalTimeframe('5Y', this)">5年</button>
+            <button class="timeframe-btn" data-tf="10Y" onclick="changeModalTimeframe('10Y', this)">10年</button>
+            <button class="timeframe-btn" data-tf="ALL" onclick="changeModalTimeframe('ALL', this)">全部</button>
+          </div>
+          <button class="modal-close-btn" onclick="closeChartModal()">✕</button>
+        </div>
+      </div>
+      <div class="modal-stats" id="modal-stats"></div>
+      <div class="modal-body">
+        <canvas id="modal-chart"></canvas>
+      </div>
+      <div class="modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay-bg" id="modal-bg" onclick="closeChartModal()"></div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/mockdata.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/pages.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
